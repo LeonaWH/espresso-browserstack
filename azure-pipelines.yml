@@ -1,0 +1,55 @@
+trigger:
+- master  # Adjust the branch name as needed
+
+pool:
+  vmImage: 'ubuntu-latest'  # Use an appropriate VM image
+  demands:
+    - agent.os -equals Linux
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '16.x'  # Adjust based on your project's node version
+  displayName: 'Install Node.js'
+
+- script: |
+    echo "Installing dependencies"
+    npm install
+  displayName: 'Install Dependencies'
+
+- script: |
+    echo "Building APKs"
+    # Run Gradle commands to build the main APK and test APK
+    ./gradlew assemble  # This will build the main APK
+    ./gradlew assembleAndroidTest  # This will build the test APK
+  displayName: 'Build Main APK and Test APK'
+
+- script: |
+    echo "Running BrowserStack setup"
+    # Use the Azure DevOps variables in your script
+    export BS_ACCESS_KEY=$(BROWSERSTACK_ACCESS_KEY)
+    export BS_USERNAME=$(BROWSERSTACK_USERNAME)
+
+    # Upload app to BrowserStack
+    APP_URL=$(curl -u "$BS_USERNAME:$BS_ACCESS_KEY" \
+      -X POST \
+      -F "file=@$(Build.SourcesDirectory)/app/build/outputs/apk/debug/app-debug.apk" \
+      https://api.browserstack.com/app-automate/upload)
+    echo "App uploaded. App URL: $APP_URL"
+
+    # Upload test suite to BrowserStack
+    TEST_URL=$(curl -u "$BS_USERNAME:$BS_ACCESS_KEY" \
+      -X POST \
+      -F "file=@$(Build.SourcesDirectory)/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk" \
+      https://api.browserstack.com/app-automate/upload)
+    echo "Test suite uploaded. Test URL: $TEST_URL"
+
+    # Trigger the Espresso tests on BrowserStack
+    BUILD_ID=$(curl -u "$BS_USERNAME:$BS_ACCESS_KEY" \
+      -X POST \
+      -d "app_url=$APP_URL" \
+      -d "test_url=$TEST_URL" \
+      -d "device=Samsung Galaxy S21" \
+      https://api.browserstack.com/automate/sessions.json)
+    echo "Build triggered. Build ID: $BUILD_ID"
+  displayName: 'Upload App and Run Tests on BrowserStack'
