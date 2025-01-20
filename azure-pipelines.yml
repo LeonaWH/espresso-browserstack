@@ -1,10 +1,7 @@
 trigger:
 - master  # Adjust the branch name as needed
 
-pool:
-  vmImage: 'ubuntu-latest'  # Use an appropriate VM image
-  demands:
-    - agent.os -equals Linux
+
 
 steps:
 - task: NodeTool@0
