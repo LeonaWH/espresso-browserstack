@@ -3,7 +3,6 @@ trigger:
 
 pool:
   name: 'Azure Pipelines'  # Use this pool explicitly if needed
-  vmImage: 'ubuntu-latest'  # Ensure you're specifying a Microsoft-hosted agent
 
 steps:
 - task: NodeTool@0
