@@ -1,26 +1,37 @@
 apply plugin: 'com.android.application'
 apply plugin: 'jacoco'
+
 jacoco {
-    toolVersion='0.7.5.201505241946'
+    toolVersion = '0.8.7'  // Update Jacoco to a more recent version
 }
+
 buildscript {
     repositories {
         mavenCentral()
+        google()  // Make sure google() repository is added as well for Android dependencies
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.4.2'  // Update to a newer version of the Android Gradle Plugin
     }
 }
 
 android {
-    compileSdkVersion 30
-    dataBinding.enabled = true
+    compileSdkVersion 32  // Or change to the desired SDK version, e.g., 31 or 32
+    namespace 'com.sample.browserstack.samplecalculator'  // Add this line
+
+    dataBinding {
+        enabled = true
+    }
 
     defaultConfig {
         applicationId "com.sample.browserstack.samplecalculator"
         minSdkVersion 15
-        targetSdkVersion 30
+        targetSdkVersion 32  // Update to the latest if desired
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -30,6 +41,7 @@ android {
             testCoverageEnabled true
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -38,10 +50,14 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.0.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
-    androidTestImplementation 'androidx.test:rules:1.1.1'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    testImplementation 'junit:junit:4.12'
+    implementation 'androidx.appcompat:appcompat:1.4.1'  // Updated to the latest version of appcompat
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'  // Updated to the latest version of constraintlayout
+
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'  // Update to the latest version of Espresso
+    androidTestImplementation 'androidx.test:rules:1.4.0'  // Update to the latest version of rules
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'  // Update to the latest version of junit for testing
+
+    testImplementation 'junit:junit:4.13.2'  // Updated JUnit version
 }
+
+
