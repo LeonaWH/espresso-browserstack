@@ -2,7 +2,7 @@ trigger:
 - master  # Adjust the branch name as needed
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: local
 
 steps:
 - task: NodeTool@0
