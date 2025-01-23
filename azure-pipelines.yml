@@ -10,10 +10,6 @@ steps:
     versionSpec: '16.x'  # Adjust based on your project's node version
   displayName: 'Install Node.js'
 
-- script: |
-    echo "Installing dependencies"
-    npm install
-  displayName: 'Install Dependencies'
 
 - script: |
     echo "Building APKs"
