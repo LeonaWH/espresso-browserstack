@@ -7,9 +7,8 @@ pool:
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: '16.x'  # Adjust based on your project's node version
+    versionSpec: '16.x'  # Adjust based on your project's Node.js version
   displayName: 'Install Node.js'
-
 
 - script: |
     echo "Building APKs"
@@ -20,30 +19,33 @@ steps:
 
 - script: |
     echo "Running BrowserStack setup"
+    # Install jq for JSON parsing
+    sudo apt-get update && sudo apt-get install -y jq
+
     # Use the Azure DevOps variables in your script
     export BS_ACCESS_KEY=$(BROWSERSTACK_ACCESS_KEY)
     export BS_USERNAME=$(BROWSERSTACK_USERNAME)
 
     # Upload app to BrowserStack
-    APP_URL=$(curl -u "$BS_USERNAME:$BS_ACCESS_KEY" \
-      -X POST \
+    APP_RESPONSE=$(curl -u "$BS_USERNAME:$BS_ACCESS_KEY" \
+      -X POST "https://api-cloud.browserstack.com/app-automate/espresso/v2/test-suite" \
       -F "file=@$(Build.SourcesDirectory)/app/build/outputs/apk/debug/app-debug.apk" \
-      https://api.browserstack.com/app-automate/upload)
+    APP_URL=$(echo $APP_RESPONSE | jq -r '.app_url')
     echo "App uploaded. App URL: $APP_URL"
 
     # Upload test suite to BrowserStack
-    TEST_URL=$(curl -u "$BS_USERNAME:$BS_ACCESS_KEY" \
+    TEST_RESPONSE=$(curl -u "$BS_USERNAME:$BS_ACCESS_KEY" \
       -X POST \
       -F "file=@$(Build.SourcesDirectory)/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk" \
       https://api.browserstack.com/app-automate/upload)
+    TEST_URL=$(echo $TEST_RESPONSE | jq -r '.test_suite_url')
     echo "Test suite uploaded. Test URL: $TEST_URL"
 
     # Trigger the Espresso tests on BrowserStack
-    BUILD_ID=$(curl -u "$BS_USERNAME:$BS_ACCESS_KEY" \
-      -X POST \
-      -d "app_url=$APP_URL" \
-      -d "test_url=$TEST_URL" \
-      -d "device=Samsung Galaxy S21" \
-      https://api.browserstack.com/automate/sessions.json)
+    BUILD_RESPONSE=$(curl -u "$BS_USERNAME:$BS_ACCESS_KEY" \
+      -X POST "https://api-cloud.browserstack.com/app-automate/espresso/v2/build" \
+      -d '{"app": "'"$APP_URL"'", "testSuite": "'"$TEST_URL"'", "devices": ["Samsung Galaxy S23-13.0"]}' \
+      -H "Content-Type: application/json")
+    BUILD_ID=$(echo $BUILD_RESPONSE | jq -r '.build_id')
     echo "Build triggered. Build ID: $BUILD_ID"
   displayName: 'Upload App and Run Tests on BrowserStack'
