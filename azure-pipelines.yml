@@ -29,14 +29,14 @@ steps:
     # Upload app to BrowserStack
     APP_RESPONSE=$(curl -u "$BS_USERNAME:$BS_ACCESS_KEY" \
       -X POST "https://api-cloud.browserstack.com/app-automate/espresso/v2/app" \
-      -F "file=@$(Build.SourcesDirectory)/app/build/outputs/apk/debug/app-debug.apk" \
+      -F "file=@$(Build.SourcesDirectory)/app/build/outputs/apk/debug/app-debug.apk")
     APP_URL=$(echo $APP_RESPONSE | jq -r '.app_url')
     echo "App uploaded. App URL: $APP_URL"
 
     # Upload test suite to BrowserStack
     TEST_RESPONSE=$(curl -u "$BS_USERNAME:$BS_ACCESS_KEY" \
       -X POST "https://api-cloud.browserstack.com/app-automate/espresso/v2/test-suite" \
-      -F "file=@$(Build.SourcesDirectory)/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk" \
+      -F "file=@$(Build.SourcesDirectory)/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk")
     TEST_URL=$(echo $TEST_RESPONSE | jq -r '.test_suite_url')
     echo "Test suite uploaded. Test URL: $TEST_URL"
 
