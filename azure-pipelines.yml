@@ -43,8 +43,9 @@ steps:
     # Trigger the Espresso tests on BrowserStack
     BUILD_RESPONSE=$(curl -u "$BS_USERNAME:$BS_ACCESS_KEY" \
       -X POST "https://api-cloud.browserstack.com/app-automate/espresso/v2/build" \
-      -d '{"app": "'"$APP_URL"'", "testSuite": "'"$TEST_URL"'", "devices": ["Samsung Galaxy S23-13.0"]}' \
+      -d '{"app": "'"$APP_URL"'", "testSuite": "'"$TEST_URL"'", "devices": ["Samsung Galaxy S24-14.0", "Google Pixel 8-14.0"], "deviceLogs": true, "accessibility": true, "accessibilityOptions": {"wcagVersion": "wcag22aa", "includeIssueType": {"bestPractice": true, "needsReview": false}}}' \
       -H "Content-Type: application/json")
     BUILD_ID=$(echo $BUILD_RESPONSE | jq -r '.build_id')
     echo "Build triggered. Build ID: $BUILD_ID"
-  displayName: 'Upload App and Run Tests on BrowserStack'
+    displayName: 'Upload App and Run Tests on BrowserStack with A11y'
+
