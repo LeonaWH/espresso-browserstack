@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'jacoco'
+apply plugin: 'com.browserstack.gradle'
 
 jacoco {
     toolVersion = '0.8.7'  // Update Jacoco to a more recent version
@@ -50,12 +51,14 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    
     implementation 'androidx.appcompat:appcompat:1.4.1'  // Updated to the latest version of appcompat
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'  // Updated to the latest version of constraintlayout
 
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'  // Update to the latest version of Espresso
     androidTestImplementation 'androidx.test:rules:1.4.0'  // Update to the latest version of rules
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'  // Update to the latest version of junit for testing
+    androidTestImplementation 'com.browserstack:espresso-sdk:1.+'
 
     testImplementation 'junit:junit:4.13.2'  // Updated JUnit version
     androidTestImplementation "io.percy:espresso-java:1.0.3"
